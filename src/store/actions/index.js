@@ -6,5 +6,7 @@ export {
 } from './burgerBuilder';
 
 export {
-
+  purchaseInit,
+  purchaseBuger,
+  fetchOrders,
 } from './order.js';
