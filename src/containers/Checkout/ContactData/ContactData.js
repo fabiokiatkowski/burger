@@ -8,7 +8,7 @@ import axios from '../../../axios-orders';
 import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler';
 import * as actions from '../../../store/actions/index';
 
-import classes from './ContactDate.css';
+import classes from './ContactData.css';
 
 class ContactData extends Component {
   state = {
@@ -87,7 +87,8 @@ class ContactData extends Component {
         },
         value: '',
         validation: {
-          required: true
+          required: true,
+          isEmail: true
         },
         valid:  {
           value: false,
@@ -128,25 +129,42 @@ class ContactData extends Component {
     const order = {
       ingredients: this.props.ings,
       price: this.props.totalPrice,
-      orderData: formData
+      orderData: formData,
+      userId: this.props.userId
     }
-    this.props.onOrderBurger(order);
+    this.props.onOrderBurger(order, this.props.tokenId);
   }
 
   checkValidity(value, rules) {
     let isValid = true;
+    if (!rules) {
+        return true;
+    }
+    
     if (rules.required) {
-      isValid = value.trim() !== '' && isValid;
+        isValid = value.trim() !== '' && isValid;
     }
+
     if (rules.minLength) {
-      isValid = value.length >= rules.minLength && isValid
+        isValid = value.length >= rules.minLength && isValid
     }
+
     if (rules.maxLength) {
-      isValid = value.length <= rules.maxLength && isValid
+        isValid = value.length <= rules.maxLength && isValid
+    }
+
+    if (rules.isEmail) {
+        const pattern = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+        isValid = pattern.test(value) && isValid
+    }
+
+    if (rules.isNumeric) {
+        const pattern = /^\d+$/;
+        isValid = pattern.test(value) && isValid
     }
 
     return isValid;
-  }
+}
 
   inputChangedHandler = (event, inputIdentifier) => {
     const formData = {
@@ -210,13 +228,15 @@ const mapStateToProps = state => {
   return {
     ings: state.burgerBuilder.ingredients,
     totalPrice: state.burgerBuilder.totalPrice,
-    loading: state.order.loading
+    loading: state.order.loading,
+    tokenId: state.auth.token,
+    userId: state.auth.userId
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    onOrderBurger: (order) => dispatch(actions.purchaseBuger(order))
+    onOrderBurger: (order, tokenId) => dispatch(actions.purchaseBuger(order, tokenId))
   }
 }
 
