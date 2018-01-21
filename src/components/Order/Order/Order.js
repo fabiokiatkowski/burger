@@ -20,8 +20,7 @@ const order = (props) => {
           textTransform: 'capitalize', 
           display: 'inline',
           margin: '0 8px',
-          border: '1px solid #ccc',
-          padding: '5px'
+          border: '1px solid #ccc'
         }
       }
       key={ig.name}>{ig.name} ({ig.amout})</span>
